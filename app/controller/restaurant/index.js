@@ -8,13 +8,34 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const readRestaurants = async (req, res) => {
   try {
-    const { location, cuisine } = req.query;
-    
-    let { data: restaurants, error } = await supabase
-      .from('restaurants')
-      .select('*')
-      .eq('location', location)
-      .eq('cuisine', cuisine);
+    const { latitude=null, longitude=null, cuisine=null, limit = 10, offset = 0 } = req.query;
+
+    let restaurants, error;
+    if(!cuisine && (latitude && longitude)){
+      let { data, error } = await supabase.rpc('nearby_restaurants', {
+        lat: latitude,
+        long: longitude,
+      })
+      .range(Number(offset), Number(offset) + Number(limit) - 1);
+      ; 
+      restaurants = data;
+      error = error;
+    } else if(cuisine && latitude && longitude){
+      let { data, error } = await supabase.rpc('nearby_restaurants_with_cuisine', {
+        lat: latitude,
+        long: longitude,
+        cuisine
+      })
+      .range(Number(offset), Number(offset) + Number(limit) - 1);
+      ; 
+      restaurants = data;
+      error = error;
+    }
+
+    // let { data: restaurants, error } = await supabase
+    //   .from('restaurants')
+    //   .select('*')
+    //   .eq('cuisine', cuisine)
 
     if (error) {
       throw error;
@@ -29,11 +50,15 @@ const readRestaurants = async (req, res) => {
 
 const createRestaurant = async (req, res) => {
   try {
-    const { name, location, cuisine } = req.body;
+    const { name, longitude, latitude, cuisine } = req.body;
 
     let { data: restaurants, error } = await supabase
       .from('restaurants')
-      .insert({ name, location, cuisine })
+      .insert({ 
+        name, 
+        location: `POINT(${longitude} ${latitude})`, 
+        cuisine 
+      })
       .select();
     if (error) {
       throw error;
