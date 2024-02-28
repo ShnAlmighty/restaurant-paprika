@@ -1,7 +1,7 @@
 # Restaurant Filtering Backend
 
 ## Information
-This repository contains APIs developed for basic search functionalities for various types of restaurant
+This repository contains APIs developed for basic restaurant search functionalities based on various filters such as type of cuisine, dietary preferences, etc.
 
 ## Prerequisites
  Install the dependencies by running the below commands from the project's root directory in the command line:
@@ -36,6 +36,7 @@ Response Schema
 | Body | Type     | Description                |
 | :-------- | :------- | :------------------------- |
 | `id` | `string` | Id of the restaurant |
+| `created_at` | `string` | Restaurant addition timestamp |
 | `name` | `string` | Name of the restaurant |
 | `location` | `object` | Object containing details of the restaurant's location and coordinate type (DB ref)|
 | `location.type` | `string` | Type of location stored in DB |
@@ -67,7 +68,7 @@ Response Schema
 | `cuisine` | `string` | Type of primary cusine served by the restaurant |
 | `latitude` | `number` | Longitude coordinate of the restaurant |
 | `longitude` | `number` | Latitude coordinate of the restaurant |
-| `created_at` | `number` | Restaurant addition timestamp |
+| `created_at` | `string` | Restaurant addition timestamp |
 | `dist_meters` | `number` | Distance from the provided coordinates (if coordinates are provided in the query)  |
 | `dietary_preferences` | `array` | An array of string/s which contains the dietary preferences supported by this restaurant |
 
