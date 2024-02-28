@@ -27,7 +27,7 @@ const readRestaurants = async (req, res) => {
           restaurants = data;
           error = error;
         } else {
-          let { data, error } = await supabase.rpc('nearby_restaurants_with_cuisine_v3', {
+          let { data, error } = await supabase.rpc('nearby_restaurants_with_cuisine_v4', {
             latitude,
             longitude,
             cuisine
@@ -70,7 +70,7 @@ const readRestaurants = async (req, res) => {
           restaurants = data;
           error = error;
         } else {
-          let { data, error } = await supabase.rpc('nearby_restaurants_v3', {
+          let { data, error } = await supabase.rpc('nearby_restaurants_v4', {
             latitude,
             longitude,
           })
@@ -83,7 +83,6 @@ const readRestaurants = async (req, res) => {
           let { data, error } = await supabase
             .from('restaurants')
             .select('*')
-            .eq('cuisine', cuisine)
             .overlaps('dietary_preferences', dietary_preferences)
             .range(Number(offset), Number(offset) + Number(limit) - 1);
           restaurants = data;
