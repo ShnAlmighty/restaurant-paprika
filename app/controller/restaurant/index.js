@@ -11,26 +11,45 @@ const readRestaurants = async (req, res) => {
     const { latitude=null, longitude=null, cuisine=null, limit = 10, offset = 0 } = req.query;
 
     let restaurants, error;
-    if(!cuisine && (latitude && longitude)){
-      let { data, error } = await supabase.rpc('nearby_restaurants', {
-        lat: latitude,
-        long: longitude,
-      })
-      .range(Number(offset), Number(offset) + Number(limit) - 1);
-      ; 
-      restaurants = data;
-      error = error;
-    } else if(cuisine && latitude && longitude){
-      let { data, error } = await supabase.rpc('nearby_restaurants_with_cuisine', {
-        lat: latitude,
-        long: longitude,
-        cuisine
-      })
-      .range(Number(offset), Number(offset) + Number(limit) - 1);
-      ; 
-      restaurants = data;
-      error = error;
-    }
+    if(cuisine){
+      if(latitude && longitude){
+        let { data, error } = await supabase.rpc('nearby_restaurants_with_cuisine_v3', {
+          latitude,
+          longitude,
+          cuisine
+        })
+        .range(Number(offset), Number(offset) + Number(limit) - 1);
+        restaurants = data;
+        error = error;
+      } else {
+        let { data, error } = await supabase
+          .from('restaurants')
+          .select('*')
+          .eq('cuisine', cuisine)
+          .range(Number(offset), Number(offset) + Number(limit) - 1);
+        restaurants = data;
+        error = error;
+      }
+    } 
+    else {
+      if(latitude && longitude){
+        let { data, error } = await supabase.rpc('nearby_restaurants_v3', {
+          latitude,
+          longitude,
+        })
+        .range(Number(offset), Number(offset) + Number(limit) - 1);
+        ; 
+        restaurants = data;
+        error = error;
+      } else {
+        let { data, error } = await supabase
+        .from('restaurants')
+        .select('*')
+        .range(Number(offset), Number(offset) + Number(limit) - 1);
+        restaurants = data;
+        error = error;
+      }
+    } 
 
     // let { data: restaurants, error } = await supabase
     //   .from('restaurants')
